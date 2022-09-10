@@ -14,18 +14,25 @@ Right_line = 420
 #创建窗口，指定颜色类型
 config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
 
-ip_remote = '192.168.123.161' # upboard IP
-port_remote = 32000 # port
+ip_remote = '192.168.123.163' # upboard IP
+port_remote = 4000 # port
 
 # 创建套接字(用于Internet之间的通讯，数据报套接字(UPD))
-udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) 
+udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+udp_socket.bind(('',3999))
 
+Middle = 0
 
 # 开始直播
 pipeline.start(config)
 
 try:
     while True:
+
+        print(Middle)
+        Middle = Middle + 1
+        if(Middle>=100):
+            Middle = -100
         # 等待一对连贯的帧: 深度和颜色
         frames = pipeline.wait_for_frames()
         # 正常读取的视频流
@@ -53,7 +60,7 @@ try:
         dst2 = cv2.morphologyEx(dst1,cv2.MORPH_CLOSE,kerenl)    #闭运算
 
         #查找轮廓, 必须是3个返回值
-        dst2,cnts,h = cv2.findContours(dst2,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
+        cnts,h = cv2.findContours(dst2,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
 
         #画一条检测线
         cv2.line(frame1,(Left_line,0),(Left_line,480),(255,0,0),1)
@@ -81,10 +88,10 @@ try:
             else: Left = 0 
             if(cX >= Right_line):Right = 1
             else: Right = 0
-            print("左右偏移",Left,Right)
+            #print("左右偏移",Left,Right)
 
         #发送数据(数据类型，(ip，端口))
-        udp_socket.sendto(bytes(str(1), 'utf-8'), (ip_remote, port_remote))
+        udp_socket.sendto(bytes(str(Middle),'utf-8'),(ip_remote, port_remote))
 
         #显示图像
         #cv2.namedWindow('RealSense', cv2.WINDOW_AUTOSIZE)
