@@ -84,7 +84,7 @@ try:
             print("左右偏移",Left,Right)
 
         #发送数据(数据类型，(ip，端口))
-        udp_socket.sendto(bytes(str(Left), 'utf-8'), (ip_remote, port_remote))
+        udp_socket.sendto(bytes(str(1), 'utf-8'), (ip_remote, port_remote))
 
         #显示图像
         #cv2.namedWindow('RealSense', cv2.WINDOW_AUTOSIZE)
