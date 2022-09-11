@@ -82,6 +82,7 @@ def D345i_init():
 
 def dog_init():
     time.sleep(0.002)
+    global motion_time
     motion_time += 1
     if (motion_time < 1000):
         state = unitree_robot.robot_dance(1)
@@ -97,6 +98,7 @@ def main():
     while True:
         Left_1,Right_1= D345i_init()
         print("左右偏移",Left_1,Right_1)
+        print('/n',motion_time)
         dog_init()
 
 main()
