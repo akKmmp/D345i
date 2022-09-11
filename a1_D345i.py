@@ -4,30 +4,32 @@ import pyrealsense2 as rs
 import numpy as np
 import cv2
 
-#左右范围，320为中心，
-Left_line = 220
-Right_line = 420
+#---------------------------配置列表---------------------------#
+#判断是否   左  , 右
+LR_line = [220,420]
+#消除背景    宽   , 高
+WH_line = [100,100]
 
+
+#----------------------D345i初始化配置----------------------#
 #配置颜色流
 pipeline = rs.pipeline()
 config = rs.config()
-
 #创建窗口，指定颜色类型
 config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
 # 开始直播
 pipeline.start(config)
-    
-def dog_init():
-
+#------------------------------------------------------------------#
+#视觉
+def D345i_init():
     Left = 2
     Right = 2
-    # 等待一对连贯的帧: 颜色
+    #等待一对连贯的帧: 颜色
     frames = pipeline.wait_for_frames()
-    # 正常读取的视频流
+    #正常读取的视频流
     color_frame = frames.get_color_frame()
     #将图像转换为数字数组
     color_image = np.asanyarray(color_frame.get_data())
-        
     #滤波
     frame1 = cv2.blur(color_image,(5,5))
     #空间转换
@@ -49,8 +51,8 @@ def dog_init():
 
     for(i,c)in enumerate(cnts):
         (x,y,w,h) = cv2.boundingRect(c)
-        #判断是否正确
-        isValid = (w >= 100) and (h >= 100)
+        #去除背景干扰
+        isValid = (w >= WH_line[0]) and (h >= WH_line[1])
         if( not isValid):
             continue
         #有效
@@ -65,15 +67,16 @@ def dog_init():
         cv2.putText(frame1, "O", (cX - 20, cY - 20),                  #绘制字符
                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
         #是否偏移逻辑处理
-        if(cX <= Left_line):Left = 1
+        if(cX <= LR_line[0]):Left = 1
         else: Left = 0 
-        if(cX >= Right_line):Right = 1
+        if(cX >= LR_line[1]):Right = 1
         else: Right = 0
     return Left,Right
 
+#主函数
 def main():
     while True:
-        Left_1,Right_1= dog_init()
+        Left_1,Right_1= D345i_init()
         print("左右偏移",Left_1,Right_1)
 
 main()
