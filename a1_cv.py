@@ -1,33 +1,32 @@
 from imp import C_EXTENSION
-import walk
+import scripts.walk as walk
 import numpy as np
 import cv2
 
 #---------------------------配置列表---------------------------#
 #判断是否   左  , 右
-LR_line = [220,420]
+LR_line = [240,400]
 #消除背景    宽   , 高
 WH_line = [150,150]
 #------------------------------------------------------------------#
 
-#-------------------------运动初始化---------------------------#
-unitree_robot = walk.Unitree_Robot()  #调用SDK库
-motion_time = 0
+#-----------------------运动视觉初始化-----------------------#
+walk_1 = walk.Unitree_Robot()  #调用SDK库
+cap = cv2.VideoCapture(0)     #获取视频设备
+motion_time = 0                         #时间初始化
 #------------------------------------------------------------------#
 
-cap = cv2.VideoCapture(0)     #获取视频设备
-#frame = cv2.imread('./001.webp')#打开当前目录下的图片
+
 
 def cv_m():
     Left = 2
     Right = 2
     ret,frame = cap.read()
-
     frame1 = cv2.blur(frame,(5,5))  #滤波
     hsv = cv2.cvtColor(frame1,cv2.COLOR_BGR2HSV)    #空间转换
 
     #颜色阈值分割，hsv的三个分量值-get remove iio-sensor -proxy
-    low_blue = np.array([10, 75, 30])                 #低于值变为0
+    low_blue = np.array([10, 75, 30])                 #低于值变为0 
     high_blue = np.array([80, 255, 255])           #高于值变为0
     #low_blue = np.array([20, 20, 75])
     #high_blue = np.array([100, 255, 255]) 
@@ -66,21 +65,13 @@ def cv_m():
 
     return Left,Right
 
-#运动
-def a1_go():
-    Left_1,Right_1= cv_m()
-    if(Left_1 == 0 and Right_1 == 0):    
-        walk.forward_walk()
-    else:walk.robot_pose(0.0, 0.0, 0, 0.0)
-
-#主函数
 def main():
     while True:
-        a1_go()
-        # Left_1,Right_1= cv_m()
-        # print("左右偏移",Left_1,Right_1)
-        # print('/n',motion_time)
+        Left_1,Right_1= cv_m()
+        print("左右偏移",Left_1,Right_1)
+        if(Left_1 == 0 and Right_1 == 0): 
+            state = walk_1.forward_walk()
+        else:state = walk_1.robot_pose(0.0, 0.0, 0, 0.0)
 
 main()
-# cap.release()   #释放资源
-# cv2.destroyAllWindows()         #释放所有窗口资源
+
