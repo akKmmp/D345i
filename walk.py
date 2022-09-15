@@ -1,7 +1,6 @@
 #!/usr/bin/python
 import sys
-sys.path.append('/home/yan/unitree_legged_sdk-3.3.2/build') # Edit the path to "build" folder on your computer
-import time
+sys.path.append('/home/ak/文档/unitree_legged_sdk-3.3.2/build') # Edit the path to "build" folder on your computer
 import robot_interface_high_level as robot_interface #导入robot_interface_high_level模块时指定了别名robot_interface
 
 class Unitree_Robot():#定义一个类叫宇数机器人
@@ -67,11 +66,18 @@ class Unitree_Robot():#定义一个类叫宇数机器人
         self.robot_control()  #运行robot_control
         self.send_UDP()
         return robot_state  #将robot_state值返回终端
-         
-    def leftyaw_walk(self ):#左斜
+    def stop_walk(self):
+        self.cmd_init()
+        self.mode =1
+        robot_state = self.unitree_robot.getState()#getshate将walking数值记录下来
+        self.recv_UDP()
+        self.robot_control()  #运行robot_control
+        self.send_UDP()
+        return robot_state  #将robot_state值返回终端     
+    def leftyaw_walk(self,forwardSpeed ):#左斜
         self.cmd_init()
         self.gaitType = 1
-        self.forwardSpeed = 0.3
+        self.forwardSpeed = forwardSpeed
         self.sidewaySpeed = 0.2
         self.mode =2
         robot_state = self.unitree_robot.getState()
@@ -79,10 +85,10 @@ class Unitree_Robot():#定义一个类叫宇数机器人
         self.robot_control()
         self.send_UDP()
         return robot_state  
-    def rightyaw_walk(self ):#右斜
+    def rightyaw_walk(self, forwardSpeed):#右斜
         self.cmd_init()
         self.gaitType = 1
-        self.forwardSpeed = 0.3
+        self.forwardSpeed = forwardSpeed
         self.sidewaySpeed = -0.2
         self.mode =2
         robot_state = self.unitree_robot.getState()
@@ -90,21 +96,21 @@ class Unitree_Robot():#定义一个类叫宇数机器人
         self.robot_control()
         self.send_UDP()
         return robot_state        
-    def leftRotate_walk(self):#左转（走）
+    def leftRotate_walk(self,forwardSpeed):#左转（走）
         self.cmd_init()
         self.gaitType = 1
-        self.rotateSpeed = 0.2
-        self.forwardSpeed = 0.4
+        self.rotateSpeed = 0.3
+        self.forwardSpeed = forwardSpeed
         self.mode =2
         robot_state = self.unitree_robot.getState()
         self.recv_UDP()
         self.robot_control()
         self.send_UDP()
-    def rightRotate_walk(self):#右转（走）
+    def rightRotate_walk(self,forwardSpeed):#右转（走）
         self.cmd_init()
         self.gaitType = 1
-        self.rotateSpeed = -0.2
-        self.forwardSpeed = 0.4
+        self.rotateSpeed = -0.3
+        self.forwardSpeed = forwardSpeed
         self.mode =2
         robot_state = self.unitree_robot.getState()
         self.recv_UDP()
@@ -119,15 +125,11 @@ class Unitree_Robot():#定义一个类叫宇数机器人
         self.recv_UDP()
         self.robot_control()
         self.send_UDP()
-    def forward_walk(self):#直行
-        self.gaitType = 2
-        self.forwardSpeed =0.4
+    def forward_walk(self,forwardSpee):#直行
+        self.gaitType = 1
+        self.forwardSpeed =forwardSpee
         self.mode = 2
         robot_state = self.unitree_robot.getState()
         self.recv_UDP()
         self.robot_control()
         self.send_UDP()
-        
-
-
-
